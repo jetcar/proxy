@@ -28,7 +28,7 @@ namespace proxy
             // running the listener is "host.contoso.com".
             IPHostEntry ipHostInfo = Dns.Resolve(Dns.GetHostName());
             IPAddress ipAddress = ipHostInfo.AddressList[0];
-            IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Parse("0.0.0.0"), 11000);
+            IPEndPoint localEndPoint = new IPEndPoint(IPAddress.Parse("0.0.0.0"), 8090);
 
             // Create a TCP/IP socket.
             Socket listener = new Socket(AddressFamily.InterNetwork,
