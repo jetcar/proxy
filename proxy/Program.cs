@@ -87,6 +87,7 @@ namespace proxy
             // from the asynchronous state object.
             StateObject state = (StateObject)ar.AsyncState;
             Socket handler = state.workSocket;
+            var requestArrays = new List<byte[]>();
 
             // Read data from the client socket.
             int bytesRead = handler.EndReceive(ar);
@@ -96,6 +97,7 @@ namespace proxy
                 // There  might be more data, so store the data received so far.
                 state.sb.Append(Encoding.ASCII.GetString(
                     state.buffer, 0, bytesRead));
+                requestArrays.Add(state.buffer.Take(bytesRead).ToArray());
 
                 // Check for end-of-file tag. If it is not there, read
                 // more data.
@@ -130,7 +132,15 @@ namespace proxy
 
                             socket.Connect("10.30.138.135", 8090);
 
-                            byte[] data = Encoding.UTF8.GetBytes(content);
+                            var data = new byte[requestArrays.Sum(x => x.Length)];
+                            long index1 = 0;
+                            foreach (var listArray in requestArrays)
+                            {
+                                foreach (var b in listArray)
+                                {
+                                    data[index1++] = b;
+                                }
+                            }
                             socket.Send(data, data.Length, 0);
 
                             int bytes = 0;
@@ -142,8 +152,6 @@ namespace proxy
                                 do
                                 {
                                     bytes = socket.Receive(bytesReceived);
-                                    //currentBatch = Encoding.ASCII.GetString(bytesReceived, 0, bytes);
-                                    //responseString.Append(currentBatch);
                                     if (bytes > 0)
                                         listArrays.Add(bytesReceived.Take(bytes).ToArray());
                                 } while (bytes > 0);
