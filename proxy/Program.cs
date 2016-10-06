@@ -74,6 +74,7 @@ namespace proxy
 
             // Create the state object.
             StateObject state = new StateObject();
+            handler.Blocking = false;
             state.workSocket = handler;
             handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
                 new AsyncCallback(ReadCallback), state);
